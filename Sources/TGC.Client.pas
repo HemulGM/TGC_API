@@ -110,7 +110,7 @@ type
 
   TDLibMethods = class
   private
-    FPoll: TDictionary<TRequestId, TProc<TJSONObject>>;
+    FPoll: TThreadDict<TRequestId, TProc<TJSONObject>>;
     FClient: TTelegramClientCustom;
     FRequestQueue: TRequestId;
     function NewRequestId: TRequestId;
@@ -147,6 +147,7 @@ type
     FOnAuthReady: TNotifyEvent;
     FOnError: TOnError;
     FMethods: TDLibMethods;
+    FOnClose: TNotifyEvent;
     function GetIsInitialized: Boolean;
     procedure SetOnReceive(const Value: TOnReceiveRaw);
     procedure StartReceiver;
@@ -171,10 +172,13 @@ type
     procedure SetOnAuthReady(const Value: TNotifyEvent);
     procedure SetOnError(const Value: TOnError);
     procedure InternalRecreate;
+    procedure DoClose;
+    procedure SetOnClose(const Value: TNotifyEvent);
   protected
     procedure InitializateLib;
   public
     // service
+    procedure InternalClose;
     procedure Close;
     procedure NeedAuthCode;
     procedure NeedRegistration(Terms: TTermsOfService);
@@ -253,6 +257,10 @@ type
     /// </summary>
     property OnAuthReady: TNotifyEvent read FOnAuthReady write SetOnAuthReady;
     /// <summary>
+    /// On client close event
+    /// </summary>
+    property OnClose: TNotifyEvent read FOnClose write SetOnClose;
+    /// <summary>
     /// Error handle
     /// </summary>
     property OnError: TOnError read FOnError write SetOnError;
@@ -275,7 +283,7 @@ uses
 
 { TTelegramClientCustom }
 
-procedure TTelegramClientCustom.Close;
+procedure TTelegramClientCustom.InternalClose;
 begin
   FMethods.Clear;
   if FReceiver <> nil then
@@ -285,7 +293,16 @@ begin
     FReceiver := nil;
   end;
   if FClient <> 0 then
+  begin
     JsonClientDestroy(FClient);
+    FClient := 0;
+  end;
+end;
+
+procedure TTelegramClientCustom.Close;
+begin
+  InternalClose;
+  DoClose;
 end;
 
 constructor TTelegramClientCustom.Create;
@@ -307,7 +324,7 @@ end;
 
 destructor TTelegramClientCustom.Destroy;
 begin
-  Close;
+  InternalClose;
   FMethods.Free;
   FHandlers.Free;
   FParameters.Free;
@@ -382,7 +399,7 @@ end;
 
 procedure TTelegramClientCustom.Recreate;
 begin
-  Close;
+  InternalClose;
   InternalRecreate;
 end;
 
@@ -409,6 +426,19 @@ begin
         end)
     else
       FOnAuthReady(Self);
+end;
+
+procedure TTelegramClientCustom.DoClose;
+begin
+  if Assigned(FOnClose) then
+    if FSyncEvents then
+      Sync(
+        procedure
+        begin
+          FOnClose(Self);
+        end)
+    else
+      FOnClose(Self);
 end;
 
 procedure TTelegramClientCustom.NeedAuthCode;
@@ -531,7 +561,6 @@ end;
 
 procedure TTelegramClientCustom.StartReceiver;
 begin
-  FReceiver := nil;
   FReceiver := TTask.Run(ReceiverWorker);
 end;
 
@@ -540,7 +569,7 @@ var
   JSONString: string;
 begin
   Result := nil;
-  JSONString := string(JsonClientReceive(FClient, TimeOut));
+  JSONString := TgCharToString(JsonClientReceive(FClient, TimeOut));
   if not JSONString.IsEmpty then
     Result := TJSONObject.ParseJSONValue(JSONString) as TJSONObject;
 end;
@@ -548,6 +577,7 @@ end;
 procedure TTelegramClientCustom.Send(const JSON: TJSONObject; AutoFree: Boolean);
 var
   JSONString: string;
+  AnsiStr: PAnsiChar;
 begin
   try
     JSONString := JSON.ToJSON;
@@ -556,7 +586,8 @@ begin
       JSON.Free;
   end;
   DoReceiveRaw(JSONString);
-  JsonClientSend(FClient, StringToTgChar(JSONString));
+  AnsiStr := StringToTgChar(JSONString);
+  JsonClientSend(FClient, AnsiStr);
 end;
 
 procedure TTelegramClientCustom.Send(const AType, AName: string; const JSON: TJSONValue);
@@ -614,6 +645,11 @@ end;
 procedure TTelegramClientCustom.SetOnAuthReady(const Value: TNotifyEvent);
 begin
   FOnAuthReady := Value;
+end;
+
+procedure TTelegramClientCustom.SetOnClose(const Value: TNotifyEvent);
+begin
+  FOnClose := Value;
 end;
 
 procedure TTelegramClientCustom.SetOnError(const Value: TOnError);
@@ -752,7 +788,7 @@ constructor TDLibMethods.Create(Client: TTelegramClientCustom);
 begin
   inherited Create;
   FClient := Client;
-  FPoll := TDictionary<TRequestId, TProc<TJSONObject>>.Create;
+  FPoll := TThreadDict<TRequestId, TProc<TJSONObject>>.Create;
   FRequestQueue := 0;
 end;
 
@@ -819,12 +855,18 @@ end;
 function TDLibMethods.Proc(const RequestId: TRequestId; JSON: TJSONObject): Boolean;
 var
   Callback: TProc<TJSONObject>;
+  Dict: TSafeDictionary<TRequestId, TProc<TJSONObject>>;
 begin
-  if FPoll.TryGetValue(RequestId, Callback) then
-  begin
-    FPoll.Remove(RequestId);
-    Callback(JSON);
-    Exit(True);
+  Dict := FPoll.Lock;
+  try
+    if Dict.TryGetValue(RequestId, Callback) then
+    begin
+      Dict.Remove(RequestId);
+      Callback(JSON);
+      Exit(True);
+    end;
+  finally
+    FPoll.Unlock;
   end;
   Result := False;
 end;

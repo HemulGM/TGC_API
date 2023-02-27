@@ -22,6 +22,7 @@ type
     procedure TelegramClient1Error(Sender: TObject; const Code: Integer; const Message: string);
     procedure TelegramClient1NeedAuthConfirm(Sender: TObject; const Link: string);
     procedure Button1Click(Sender: TObject);
+    procedure TelegramClient1Close(Sender: TObject);
   public
   end;
 
@@ -68,6 +69,12 @@ end;
 procedure TForm4.TelegramClient1AuthReady(Sender: TObject);
 begin
   ShowMessage('ready');
+end;
+
+procedure TForm4.TelegramClient1Close(Sender: TObject);
+begin
+  Memo1.Lines.Add('Client closed. Recreating');
+  TelegramClient1.Recreate;
 end;
 
 procedure TForm4.TelegramClient1Error(Sender: TObject; const Code: Integer; const Message: string);

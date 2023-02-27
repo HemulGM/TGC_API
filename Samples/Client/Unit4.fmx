@@ -46,6 +46,7 @@ object Form4: TForm4
     OnNeedAuthPassword = TelegramClient1NeedAuthPassword
     OnNeedAuthConfirm = TelegramClient1NeedAuthConfirm
     OnAuthReady = TelegramClient1AuthReady
+    OnClose = TelegramClient1Close
     OnError = TelegramClient1Error
     Left = 512
     Top = 208

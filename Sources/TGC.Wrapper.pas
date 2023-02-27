@@ -109,6 +109,8 @@ procedure TDLibFinalize;
 
 function StringToTgChar(const Value: string): TGChar;
 
+function TgCharToString(const Value: TGChar): string;
+
 implementation
 
 uses
@@ -122,7 +124,12 @@ var
 
 function StringToTgChar(const Value: string): TGChar;
 begin
-  Result := TGChar(AnsiString(Value));
+  Result := TGChar(AnsiString(UTF8Encode(Value)));
+end;
+
+function TgCharToString(const Value: TGChar): string;
+begin
+  Result := UTF8ToString(Value);
 end;
 
 function TDLibInitialize: Boolean;

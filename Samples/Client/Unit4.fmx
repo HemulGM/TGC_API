@@ -1,0 +1,53 @@
+object Form4: TForm4
+  Left = 0
+  Top = 0
+  Caption = 'Form4'
+  ClientHeight = 480
+  ClientWidth = 640
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  DesignerMasterStyle = 0
+  object Memo1: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 449.000000000000000000
+    Size.Height = 417.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Viewport.Width = 445.000000000000000000
+    Viewport.Height = 413.000000000000000000
+  end
+  object Button1: TButton
+    Position.X = 465.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 3
+    Text = 'Button1'
+    OnClick = Button1Click
+  end
+  object TelegramClient1: TTelegramClient
+    OnReceive = TelegramClient1Receive
+    SyncEvents = True
+    Timeout = 10.000000000000000000
+    UseTestDC = True
+    Parameters.DatabaseDirectory = 'tdlib'
+    Parameters.FilesDirectory = 'tdlib_files'
+    Parameters.SystemLanguageCode = 'ru'
+    Parameters.DeviceModel = 'Desktop'
+    Parameters.ApplicationVersion = '0.1'
+    ApiId = 29265223
+    ApiHash = 'd8c53e8da942aa5bfe1147d307196cb5'
+    PhoneNumber = '+79530021368'
+    OnNeedAuthCode = TelegramClient1NeedAuthCode
+    OnRegistration = TelegramClient1Registration
+    OnNeedAuthPassword = TelegramClient1NeedAuthPassword
+    OnNeedAuthConfirm = TelegramClient1NeedAuthConfirm
+    OnAuthReady = TelegramClient1AuthReady
+    OnError = TelegramClient1Error
+    Left = 512
+    Top = 208
+  end
+end

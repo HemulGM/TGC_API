@@ -1,0 +1,60 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{C4297330-400C-4432-A3EC-A45060CF97D9}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Samples\Client\TGClient.dproj">
+            <Dependencies>Package\TGC_API.dproj</Dependencies>
+        </Projects>
+        <Projects Include="Package\TGC_API.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\#Fork\tdlib-delphi\testando.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="TGClient" DependsOnTargets="TGC_API">
+        <MSBuild Projects="Samples\Client\TGClient.dproj"/>
+    </Target>
+    <Target Name="TGClient:Clean" DependsOnTargets="TGC_API:Clean">
+        <MSBuild Projects="Samples\Client\TGClient.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TGClient:Make" DependsOnTargets="TGC_API:Make">
+        <MSBuild Projects="Samples\Client\TGClient.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="TGC_API">
+        <MSBuild Projects="Package\TGC_API.dproj"/>
+    </Target>
+    <Target Name="TGC_API:Clean">
+        <MSBuild Projects="Package\TGC_API.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TGC_API:Make">
+        <MSBuild Projects="Package\TGC_API.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="testando">
+        <MSBuild Projects="..\#Fork\tdlib-delphi\testando.dproj"/>
+    </Target>
+    <Target Name="testando:Clean">
+        <MSBuild Projects="..\#Fork\tdlib-delphi\testando.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="testando:Make">
+        <MSBuild Projects="..\#Fork\tdlib-delphi\testando.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="TGClient;TGC_API;testando"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="TGClient:Clean;TGC_API:Clean;testando:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="TGClient:Make;TGC_API:Make;testando:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

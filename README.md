@@ -8,4 +8,4 @@ To work with a client, you need to have `ApiId` and `ApiHash` - the data of the 
 Next, you can customize the Parameters section to your liking.
 
 The client requires the assembly of the `tdjson.dll` library version `1.8.11`, as well as the library: `libcrypto-1_1.dll`, `libssl-1_1.dll`, `zlib1.dll`.
-Libraries are in the Client folder in the examples
+Libraries are in the Bin folder

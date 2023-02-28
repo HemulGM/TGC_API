@@ -113,10 +113,14 @@ type
     FPoll: TThreadDict<TRequestId, TProc<TJSONObject>>;
     FClient: TTelegramClientCustom;
     FRequestQueue: TRequestId;
+    FSync: Boolean;
     function NewRequestId: TRequestId;
+    procedure SetSync(const Value: Boolean);
+    procedure Sync(Proc: TProc);
   protected
     procedure Clear;
     function Proc(const RequestId: TRequestId; JSON: TJSONObject): Boolean;
+    property SyncCallback: Boolean read FSync write SetSync;
   public
     procedure GetMe(Callback: TProc<TtgUser>);
     procedure Execute<T: class, constructor>(Query: TParam; FieldName: string; Callback: TProc<T>); overload;
@@ -156,7 +160,6 @@ type
     procedure SetTimeout(const Value: Double);
     procedure ProcReceive(JSON: TJSONObject);
     procedure DoReceiveRaw(const JSON: string);
-    procedure Sync(Proc: TProc);
     procedure CreateHandlers;
     procedure SetUseTestDC(const Value: Boolean);
     procedure SetApiHash(const Value: string);
@@ -174,6 +177,9 @@ type
     procedure InternalRecreate;
     procedure DoClose;
     procedure SetOnClose(const Value: TNotifyEvent);
+    procedure SetSyncMethodsCallback(const Value: Boolean);
+    function GetSyncMethodsCallback: Boolean;
+    procedure Sync(Proc: TProc);
   protected
     procedure InitializateLib;
   public
@@ -209,6 +215,10 @@ type
     /// </summary>
     property SyncEvents: Boolean read FSyncEvents write SetSyncEvents default False;
     /// <summary>
+    /// Do synchronize methods callback
+    /// </summary>
+    property SyncMethodsCallback: Boolean read GetSyncMethodsCallback write SetSyncMethodsCallback default False;
+    /// <summary>
     /// Receive timeout (in seconds). Default 10.0 sec
     /// </summary>
     property Timeout: Double read FTimeout write SetTimeout;
@@ -223,7 +233,7 @@ type
     /// <summary>
     /// Application identifier for Telegram API access, which can be obtained at https://my.telegram.org.
     /// </summary>
-    property ApiId: Int32 read FApiId write SetApiId;
+    property ApiId: Int32 read FApiId write SetApiId default 0;
     /// <summary>
     /// Application identifier hash for Telegram API access, which can be obtained at https://my.telegram.org.
     /// </summary>
@@ -245,11 +255,13 @@ type
     /// </summary>
     property OnRegistration: TOnNeedRegistration read FOnRegistration write SetOnRegistration;
     /// <summary>
-    /// The user has been authorized, but needs to enter a password to start using the application. Use SetAuthPassword
+    /// The user has been authorized, but needs to enter a password to start using the application.
+    /// Use SetAuthPassword
     /// </summary>
     property OnNeedAuthPassword: TNotifyEvent read FOnNeedAuthPassword write SetOnNeedAuthPassword;
     /// <summary>
-    /// The user needs to confirm authorization on another logged in device by scanning a QR code with the provided link
+    /// The user needs to confirm authorization on another logged in device by scanning a QR code
+    /// with the provided link
     /// </summary>
     property OnNeedAuthConfirm: TOnNeedAuthConfirm read FOnNeedAuthConfirm write SetOnNeedAuthConfirm;
     /// <summary>
@@ -257,7 +269,9 @@ type
     /// </summary>
     property OnAuthReady: TNotifyEvent read FOnAuthReady write SetOnAuthReady;
     /// <summary>
-    /// On client close event
+    /// TDLib client is in its final state. All databases are closed and all resources are released.
+    /// No other updates will be received after this. All queries will be responded to with error code 500.
+    /// To continue working, one must create a new instance of the TDLib client.
     /// </summary>
     property OnClose: TNotifyEvent read FOnClose write SetOnClose;
     /// <summary>
@@ -332,6 +346,15 @@ begin
   inherited;
 end;
 
+procedure TTelegramClientCustom.Sync(Proc: TProc);
+begin
+  TThread.Queue(nil,
+    procedure
+    begin
+      Proc;
+    end);
+end;
+
 procedure TTelegramClientCustom.Error(const Code: Integer; const Message: string);
 begin
   if Assigned(FOnError) then
@@ -364,6 +387,11 @@ end;
 function TTelegramClientCustom.GetIsInitialized: Boolean;
 begin
   Result := FClient <> 0;
+end;
+
+function TTelegramClientCustom.GetSyncMethodsCallback: Boolean;
+begin
+  Result := FMethods.SyncCallback;
 end;
 
 function TTelegramClientCustom.GetInternalSystemLangCode: string;
@@ -524,15 +552,6 @@ begin
   finally
     JSON.Free;
   end;
-end;
-
-procedure TTelegramClientCustom.Sync(Proc: TProc);
-begin
-  TThread.Queue(nil,
-    procedure
-    begin
-      Proc;
-    end);
 end;
 
 procedure TTelegramClientCustom.DoReceiveRaw(const JSON: string);
@@ -700,6 +719,11 @@ begin
   FSyncEvents := Value;
 end;
 
+procedure TTelegramClientCustom.SetSyncMethodsCallback(const Value: Boolean);
+begin
+  FMethods.SyncCallback := Value;
+end;
+
 procedure TTelegramClientCustom.SetTimeout(const Value: Double);
 begin
   FTimeout := Value;
@@ -787,6 +811,7 @@ end;
 constructor TDLibMethods.Create(Client: TTelegramClientCustom);
 begin
   inherited Create;
+  FSync := False;
   FClient := Client;
   FPoll := TThreadDict<TRequestId, TProc<TJSONObject>>.Create;
   FRequestQueue := 0;
@@ -803,7 +828,25 @@ begin
   try
     var RequestId := NewRequestId;
     Query.Extra(RequestId);
-    FPoll.Add(RequestId, Callback);
+    FPoll.Add(RequestId,
+      procedure(JSON: TJSONObject)
+      begin
+        if not FSync then
+          Callback(JSON)
+        else
+        begin
+          var JO := TJSONObject(JSON.Clone);
+          Sync(
+            procedure
+            begin
+              try
+                Callback(JO);
+              finally
+                JO.Free;
+              end;
+            end);
+        end;
+      end);
     FClient.Send(Query.JSON, False);
   finally
     Query.Free;
@@ -827,11 +870,27 @@ begin
           JO := JSON.GetValue(FieldName, nil);
         if Assigned(JO) then
         begin
-          Obj := TJson.JsonToObject<T>(JSON);
-          try
-            Callback(Obj);
-          finally
-            Obj.Free;
+          if not FSync then
+          begin
+            Obj := TJson.JsonToObject<T>(JO);
+            try
+              Callback(Obj);
+            finally
+              Obj.Free;
+            end;
+          end
+          else
+          begin
+            Obj := TJson.JsonToObject<T>(JO);
+            Sync(
+              procedure
+              begin
+                try
+                  Callback(Obj);
+                finally
+                  Obj.Free;
+                end;
+              end);
           end;
         end;
       end);
@@ -869,6 +928,20 @@ begin
     FPoll.Unlock;
   end;
   Result := False;
+end;
+
+procedure TDLibMethods.SetSync(const Value: Boolean);
+begin
+  FSync := Value;
+end;
+
+procedure TDLibMethods.Sync(Proc: TProc);
+begin
+  TThread.Queue(nil,
+    procedure
+    begin
+      Proc;
+    end);
 end;
 
 end.

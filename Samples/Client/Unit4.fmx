@@ -31,8 +31,8 @@ object Form4: TForm4
   object TelegramClient1: TTelegramClient
     OnReceive = TelegramClient1Receive
     SyncEvents = True
+    SyncMethodsCallback = True
     Timeout = 10.000000000000000000
-    UseTestDC = True
     Parameters.DatabaseDirectory = 'tdlib'
     Parameters.FilesDirectory = 'tdlib_files'
     Parameters.SystemLanguageCode = 'ru'
@@ -49,6 +49,6 @@ object Form4: TForm4
     OnClose = TelegramClient1Close
     OnError = TelegramClient1Error
     Left = 512
-    Top = 208
+    Top = 96
   end
 end

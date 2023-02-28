@@ -41,22 +41,13 @@ begin
   TelegramClient1.Methods.GetMe(
     procedure(User: TtgUser)
     begin
-      TThread.Queue(nil,
-        procedure
-        begin
-          Memo1.Lines.Add('TelegramClient1.Methods.GetMe callback');
-        end);
+      Memo1.Lines.Add('TelegramClient1.Methods.GetMe callback'#13#10 + User.FirstName + ' ' + User.LastName);
     end);
 
   TelegramClient1.Methods.Execute(TGetMe.Create, '',
     procedure(User: TJSONObject)
     begin
-      var S := User.Format;
-      TThread.Queue(nil,
-        procedure
-        begin
-          Memo1.Lines.Add('TelegramClient1.Methods.GetMe callback'#13#10 + S);
-        end);
+      Memo1.Lines.Add('TelegramClient1.Methods.GetMe callback'#13#10 + User.Format);
     end);
 end;
 

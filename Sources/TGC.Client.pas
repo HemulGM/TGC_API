@@ -5,7 +5,8 @@ interface
 uses
   System.Classes, System.SysUtils, System.Generics.Collections, System.Threading,
   System.JSON, TGC.Wrapper, TGC.Handler, TGC.Handler.UpdateAuthorizationState,
-  TGC.Entity.User, TGC.Classes;
+  TGC.Entity.User, TGC.Classes, TGC.Options, TGC.Builder.SendMessage,
+  TGC.Entity.Message;
 
 const
   DEFAULT_WAIT_TIMEOUT = 10.0;
@@ -123,6 +124,7 @@ type
     property SyncCallback: Boolean read FSync write SetSync;
   public
     procedure GetMe(Callback: TProc<TtgUser>);
+    procedure SendMessage(Params: TBuildSendMessage; Callback: TProc<TtgMessage>);
     procedure Execute<T: class, constructor>(Query: TParam; FieldName: string; Callback: TProc<T>); overload;
     procedure Execute(Query: TParam; FieldName: string; Callback: TProc<TJSONObject>); overload;
     constructor Create(Client: TTelegramClientCustom);
@@ -152,6 +154,7 @@ type
     FOnError: TOnError;
     FMethods: TDLibMethods;
     FOnClose: TNotifyEvent;
+    FOptions: TtgOptions;
     function GetIsInitialized: Boolean;
     procedure SetOnReceive(const Value: TOnReceiveRaw);
     procedure StartReceiver;
@@ -182,9 +185,9 @@ type
     procedure Sync(Proc: TProc);
   protected
     procedure InitializateLib;
+    procedure InternalClose;
   public
     // service
-    procedure InternalClose;
     procedure Close;
     procedure NeedAuthCode;
     procedure NeedRegistration(Terms: TTermsOfService);
@@ -206,94 +209,114 @@ type
     procedure SetAuthCode(const Value: string);
     procedure SetRegisterUser(const FirstName, LastName: string);
     procedure SetAuthPassword(const Value: string);
+    /// <summary>
+    /// Accessing API Methods
+    /// </summary>
     property Methods: TDLibMethods read FMethods;
+    /// <summary>
+    /// List of session options
+    /// </summary>
+    property Options: TtgOptions read FOptions;
   published
     property OnReceive: TOnReceiveRaw read FOnReceive write SetOnReceive;
-  published
-    /// <summary>
-    /// Do synchronize component events
-    /// </summary>
-    property SyncEvents: Boolean read FSyncEvents write SetSyncEvents default False;
-    /// <summary>
-    /// Do synchronize methods callback
-    /// </summary>
-    property SyncMethodsCallback: Boolean read GetSyncMethodsCallback write SetSyncMethodsCallback default False;
-    /// <summary>
-    /// Receive timeout (in seconds). Default 10.0 sec
-    /// </summary>
+    property SyncEvents: Boolean read FSyncEvents write SetSyncEvents;
+    property SyncMethodsCallback: Boolean read GetSyncMethodsCallback write SetSyncMethodsCallback;
     property Timeout: Double read FTimeout write SetTimeout;
-    /// <summary>
-    /// If set to true, the Telegram test environment will be used instead of the production environment.
-    /// </summary>
-    property UseTestDC: Boolean read FUseTestDC write SetUseTestDC default False;
-    /// <summary>
-    /// Contains parameters for TDLib initialization.
-    /// </summary>
+    property UseTestDC: Boolean read FUseTestDC write SetUseTestDC;
     property Parameters: TTDLibParameters read FParameters write FParameters;
-    /// <summary>
-    /// Application identifier for Telegram API access, which can be obtained at https://my.telegram.org.
-    /// </summary>
-    property ApiId: Int32 read FApiId write SetApiId default 0;
-    /// <summary>
-    /// Application identifier hash for Telegram API access, which can be obtained at https://my.telegram.org.
-    /// </summary>
+    property ApiId: Int32 read FApiId write SetApiId;
     property ApiHash: string read FApiHash write SetApiHash;
-    /// <summary>
-    /// Bot token for use client as bot
-    /// </summary>
     property BotToken: string read FBotToken write SetBotToken;
-    /// <summary>
-    /// User phone number
-    /// </summary>
     property PhoneNumber: string read FPhoneNumber write SetPhoneNumber;
-    /// <summary>
-    /// Authorization code needed. Use SetAuthCode
-    /// </summary>
     property OnNeedAuthCode: TNotifyEvent read FOnNeedAuthCode write SetOnNeedAuthCode;
-    /// <summary>
-    /// Finishes user registration. Use SetRegisterUser
-    /// </summary>
     property OnRegistration: TOnNeedRegistration read FOnRegistration write SetOnRegistration;
-    /// <summary>
-    /// The user has been authorized, but needs to enter a password to start using the application.
-    /// Use SetAuthPassword
-    /// </summary>
     property OnNeedAuthPassword: TNotifyEvent read FOnNeedAuthPassword write SetOnNeedAuthPassword;
-    /// <summary>
-    /// The user needs to confirm authorization on another logged in device by scanning a QR code
-    /// with the provided link
-    /// </summary>
     property OnNeedAuthConfirm: TOnNeedAuthConfirm read FOnNeedAuthConfirm write SetOnNeedAuthConfirm;
-    /// <summary>
-    /// The user has been successfully authorized. TDLib is now ready to answer queries.
-    /// </summary>
     property OnAuthReady: TNotifyEvent read FOnAuthReady write SetOnAuthReady;
-    /// <summary>
-    /// TDLib client is in its final state. All databases are closed and all resources are released.
-    /// No other updates will be received after this. All queries will be responded to with error code 500.
-    /// To continue working, one must create a new instance of the TDLib client.
-    /// </summary>
     property OnClose: TNotifyEvent read FOnClose write SetOnClose;
-    /// <summary>
-    /// Error handle
-    /// </summary>
     property OnError: TOnError read FOnError write SetOnError;
   end;
 
   TTelegramClient = class(TTelegramClientCustom)
   published
-    property OnReceive;
-    property SyncEvents;
-    property Timeout;
-    property Parameters;
-    property ApiId;
+    /// <summary>
+    /// Application identifier hash for Telegram API access, which can be obtained at https://my.telegram.org.
+    /// </summary>
     property ApiHash;
+    /// <summary>
+    /// Application identifier for Telegram API access, which can be obtained at https://my.telegram.org.
+    /// </summary>
+    property ApiId default 0;
+    /// <summary>
+    /// Bot token for use client as bot
+    /// </summary>
+    property BotToken;
+    /// <summary>
+    /// The user has been successfully authorized. TDLib is now ready to answer queries.
+    /// </summary>
+    property OnAuthReady;
+    /// <summary>
+    /// TDLib client is in its final state. All databases are closed and all resources are released.
+    /// No other updates will be received after this. All queries will be responded to with error code 500.
+    /// To continue working, one must create a new instance of the TDLib client.
+    /// </summary>
+    property OnClose;
+    /// <summary>
+    /// Error handle
+    /// </summary>
+    property OnError;
+    /// <summary>
+    /// Authorization code needed. Use SetAuthCode
+    /// </summary>
+    property OnNeedAuthCode;
+    /// <summary>
+    /// The user needs to confirm authorization on another logged in device by scanning a QR code
+    /// with the provided link
+    /// </summary>
+    property OnNeedAuthConfirm;
+    /// <summary>
+    /// The user has been authorized, but needs to enter a password to start using the application.
+    /// Use SetAuthPassword
+    /// </summary>
+    property OnNeedAuthPassword;
+    /// <summary>
+    /// TDLib receive raw data
+    /// </summary>
+    property OnReceive;
+    /// <summary>
+    /// Finishes user registration. Use SetRegisterUser
+    /// </summary>
+    property OnRegistration;
+    /// <summary>
+    /// Contains parameters for TDLib initialization.
+    /// </summary>
+    property Parameters;
+    /// <summary>
+    /// User phone number
+    /// </summary>
+    property PhoneNumber;
+    /// <summary>
+    /// Do synchronize component events
+    /// </summary>
+    property SyncEvents default False;
+    /// <summary>
+    /// Do synchronize methods callback
+    /// </summary>
+    property SyncMethodsCallback default False;
+    /// <summary>
+    /// Receive timeout (in seconds). Default 10.0 sec
+    /// </summary>
+    property Timeout;
+    /// <summary>
+    /// If set to true, the Telegram test environment will be used instead of the production environment.
+    /// </summary>
+    property UseTestDC default False;
   end;
 
 implementation
 
 uses
-  TGC.Handler.Error, REST.Json;
+  TGC.Handler.Error, REST.Json, TGC.Handler.UpdateOption;
 
 { TTelegramClientCustom }
 
@@ -322,6 +345,7 @@ end;
 constructor TTelegramClientCustom.Create;
 begin
   inherited;
+  FOptions := TtgOptions.Create;
   FMethods := TDLibMethods.Create(Self);
   FHandlers := THandlers.Create([doOwnsValues]);
   FParameters := TTDLibParameters.Create;
@@ -342,6 +366,7 @@ begin
   FMethods.Free;
   FHandlers.Free;
   FParameters.Free;
+  FOptions.Free;
   TDLibFinalize;
   inherited;
 end;
@@ -379,7 +404,7 @@ begin
     if AutoFree then
       JSON.Free;
   end;
-  JSONString := string(JsonClientExecute(FClient, StringToTgChar(JSONString)));
+  JSONString := TgCharToString(JsonClientExecute(FClient, StringToTgChar(JSONString)));
   if not JSONString.IsEmpty then
     Result := TJSONObject.ParseJSONValue(JSONString) as TJSONObject;
 end;
@@ -423,6 +448,7 @@ begin
   FHandlers.Clear;
   FHandlers.Add('error', TError.Create(Self));
   FHandlers.Add('updateAuthorizationState', TUpdateAuthorizationState.Create(Self));
+  FHandlers.Add('updateOption', TUpdateOption.Create(Self));
 end;
 
 procedure TTelegramClientCustom.Recreate;
@@ -531,29 +557,6 @@ begin
     Terms.Free;
 end;
 
-procedure TTelegramClientCustom.ProcReceive(JSON: TJSONObject);
-var
-  AType: string;
-  AExtra: TRequestId;
-  AHandler: THandler;
-begin
-  if Assigned(JSON) then
-  try
-    DoReceiveRaw(JSON.ToJSON);
-    AType := JSON.GetValue('@type', '');
-
-    AExtra := JSON.GetValue<TRequestId>('@extra', -1);
-    if AExtra <> 0 then
-      if FMethods.Proc(AExtra, JSON) then
-        Exit;
-
-    if FHandlers.TryGetValue(AType, AHandler) then
-      AHandler.Execute(JSON);
-  finally
-    JSON.Free;
-  end;
-end;
-
 procedure TTelegramClientCustom.DoReceiveRaw(const JSON: string);
 begin
   if Assigned(FOnReceive) then
@@ -567,6 +570,11 @@ begin
       FOnReceive(Self, JSON);
 end;
 
+procedure TTelegramClientCustom.StartReceiver;
+begin
+  FReceiver := TTask.Run(ReceiverWorker);
+end;
+
 procedure TTelegramClientCustom.ReceiverWorker;
 begin
   while not ((FDoStopReceiver) or (TTask.CurrentTask.Status = TTaskStatus.Canceled)) do
@@ -576,11 +584,6 @@ begin
     on E: Exception do
       Error(-1, E.Message);
   end;
-end;
-
-procedure TTelegramClientCustom.StartReceiver;
-begin
-  FReceiver := TTask.Run(ReceiverWorker);
 end;
 
 function TTelegramClientCustom.Receive(const TimeOut: Double): TJSONObject;
@@ -593,10 +596,36 @@ begin
     Result := TJSONObject.ParseJSONValue(JSONString) as TJSONObject;
 end;
 
+procedure TTelegramClientCustom.ProcReceive(JSON: TJSONObject);
+var
+  AExtra: TRequestId;
+  AHandler: THandler;
+begin
+  if Assigned(JSON) then
+  try
+    // Обработка запросов с указанным RequestId
+    AExtra := JSON.GetValue<TRequestId>('@extra', -1);
+    if AExtra <> 0 then
+      if FMethods.Proc(AExtra, JSON) then
+        Exit;
+
+    // Обработка запросов подписанными обработчиками
+    if FHandlers.TryGetValue(JSON.GetValue('@type', ''), AHandler) then
+    begin
+      AHandler.Execute(JSON);
+      Exit;
+    end;
+
+    // Событие с сырыми данными для пользовательской обработки
+    DoReceiveRaw(JSON.ToJSON);
+  finally
+    JSON.Free;
+  end;
+end;
+
 procedure TTelegramClientCustom.Send(const JSON: TJSONObject; AutoFree: Boolean);
 var
   JSONString: string;
-  AnsiStr: PAnsiChar;
 begin
   try
     JSONString := JSON.ToJSON;
@@ -605,8 +634,7 @@ begin
       JSON.Free;
   end;
   DoReceiveRaw(JSONString);
-  AnsiStr := StringToTgChar(JSONString);
-  JsonClientSend(FClient, AnsiStr);
+  JsonClientSend(FClient, StringToTgChar(JSONString));
 end;
 
 procedure TTelegramClientCustom.Send(const AType, AName: string; const JSON: TJSONValue);
@@ -828,25 +856,28 @@ begin
   try
     var RequestId := NewRequestId;
     Query.Extra(RequestId);
-    FPoll.Add(RequestId,
-      procedure(JSON: TJSONObject)
-      begin
-        if not FSync then
-          Callback(JSON)
-        else
+    if Assigned(Callback) then
+      FPoll.Add(RequestId,
+        procedure(JSON: TJSONObject)
         begin
-          var JO := TJSONObject(JSON.Clone);
-          Sync(
-            procedure
-            begin
-              try
-                Callback(JO);
-              finally
-                JO.Free;
-              end;
-            end);
-        end;
-      end);
+          if not FSync then
+            Callback(JSON)
+          else
+          begin
+            var JO := TJSONObject(JSON.Clone);
+            Sync(
+              procedure
+              begin
+                try
+                  Callback(JO);
+                finally
+                  JO.Free;
+                end;
+              end);
+          end;
+        end)
+    else
+      FPoll.Add(RequestId, nil);
     FClient.Send(Query.JSON, False);
   finally
     Query.Free;
@@ -858,42 +889,40 @@ begin
   try
     var RequestId := NewRequestId;
     Query.Extra(RequestId);
-    FPoll.Add(RequestId,
-      procedure(JSON: TJSONObject)
-      var
-        JO: TJSONObject;
-        Obj: T;
-      begin
-        if FieldName.IsEmpty then
-          JO := JSON
-        else
-          JO := JSON.GetValue(FieldName, nil);
-        if Assigned(JO) then
+    if Assigned(Callback) then
+      FPoll.Add(RequestId,
+        procedure(JSON: TJSONObject)
+        var
+          JO: TJSONObject;
+          Obj: T;
         begin
-          if not FSync then
+          if FieldName.IsEmpty then
+            JO := JSON
+          else
+            JO := JSON.GetValue(FieldName, nil);
+          if Assigned(JO) then
           begin
             Obj := TJson.JsonToObject<T>(JO);
+            if not FSync then
             try
               Callback(Obj);
             finally
               Obj.Free;
-            end;
-          end
-          else
-          begin
-            Obj := TJson.JsonToObject<T>(JO);
-            Sync(
-              procedure
-              begin
-                try
-                  Callback(Obj);
-                finally
-                  Obj.Free;
-                end;
-              end);
+            end
+            else
+              Sync(
+                procedure
+                begin
+                  try
+                    Callback(Obj);
+                  finally
+                    Obj.Free;
+                  end;
+                end);
           end;
-        end;
-      end);
+        end)
+    else
+      FPoll.Add(RequestId, nil);
     FClient.Send(Query.JSON, False);
   finally
     Query.Free;
@@ -921,13 +950,19 @@ begin
     if Dict.TryGetValue(RequestId, Callback) then
     begin
       Dict.Remove(RequestId);
-      Callback(JSON);
+      if Assigned(Callback) then
+        Callback(JSON);
       Exit(True);
     end;
   finally
     FPoll.Unlock;
   end;
   Result := False;
+end;
+
+procedure TDLibMethods.SendMessage(Params: TBuildSendMessage; Callback: TProc<TtgMessage>);
+begin
+  Execute<TtgMessage>(Params, '', Callback);
 end;
 
 procedure TDLibMethods.SetSync(const Value: Boolean);

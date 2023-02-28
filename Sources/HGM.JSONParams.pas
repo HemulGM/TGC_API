@@ -83,7 +83,13 @@ end;
 
 function TJSONParam.Add(const Key: string; const Value: TJSONParam): TJSONParam;
 begin
-  Add(Key, TJSONValue(Value.JSON.Clone));
+  try
+    var JSON := Value.JSON;
+    Value.JSON := nil;
+    Add(Key, JSON);
+  finally
+    Value.Free;
+  end;
   Result := Self;
 end;
 
@@ -137,8 +143,12 @@ begin
   JArr := TJSONArray.Create;
   for Item in Value do
   begin
-    JArr.AddElement(Item.JSON);
-    Item.JSON := nil;
+    try
+      JArr.AddElement(Item.JSON);
+      Item.JSON := nil;
+    finally
+      Item.Free;
+    end;
   end;
 
   Add(Key, JArr);

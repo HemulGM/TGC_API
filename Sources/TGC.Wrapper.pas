@@ -124,7 +124,7 @@ var
 
 function StringToTgChar(const Value: string): TGChar;
 begin
-  Result := TGChar(AnsiString(UTF8Encode(Value)));
+  Result := TGChar(UTF8Encode(Value));
 end;
 
 function TgCharToString(const Value: TGChar): string;

@@ -8,6 +8,7 @@ object Form4: TForm4
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   DesignerMasterStyle = 0
   object Memo1: TMemo
     Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
@@ -27,6 +28,13 @@ object Form4: TForm4
     TabOrder = 3
     Text = 'Button1'
     OnClick = Button1Click
+  end
+  object Button2: TButton
+    Position.X = 465.000000000000000000
+    Position.Y = 38.000000000000000000
+    TabOrder = 6
+    Text = 'Button2'
+    OnClick = Button2Click
   end
   object TelegramClient1: TTelegramClient
     OnReceive = TelegramClient1Receive

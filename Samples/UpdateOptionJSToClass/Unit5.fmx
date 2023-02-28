@@ -1,0 +1,51 @@
+object Form5: TForm5
+  Left = 0
+  Top = 0
+  Caption = 'Form5'
+  ClientHeight = 642
+  ClientWidth = 899
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  DesignerMasterStyle = 0
+  object MemoIn: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    Align = Client
+    Size.Width = 466.000000000000000000
+    Size.Height = 600.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    Viewport.Width = 462.000000000000000000
+    Viewport.Height = 596.000000000000000000
+  end
+  object MemoOut: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    Align = Right
+    Position.X = 466.000000000000000000
+    Position.Y = 42.000000000000000000
+    Size.Width = 433.000000000000000000
+    Size.Height = 600.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Viewport.Width = 429.000000000000000000
+    Viewport.Height = 596.000000000000000000
+  end
+  object Layout1: TLayout
+    Align = Top
+    Size.Width = 899.000000000000000000
+    Size.Height = 42.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    object ButtonProc: TButton
+      Position.X = 8.000000000000000000
+      Position.Y = 10.000000000000000000
+      TabOrder = 0
+      Text = 'ButtonProc'
+      OnClick = ButtonProcClick
+    end
+  end
+end

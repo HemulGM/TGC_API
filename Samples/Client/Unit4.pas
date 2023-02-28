@@ -13,6 +13,7 @@ type
     Memo1: TMemo;
     TelegramClient1: TTelegramClient;
     Button1: TButton;
+    Button2: TButton;
     procedure FormCreate(Sender: TObject);
     procedure TelegramClient1NeedAuthCode(Sender: TObject);
     procedure TelegramClient1AuthReady(Sender: TObject);
@@ -23,6 +24,8 @@ type
     procedure TelegramClient1NeedAuthConfirm(Sender: TObject; const Link: string);
     procedure Button1Click(Sender: TObject);
     procedure TelegramClient1Close(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
   public
   end;
 
@@ -32,7 +35,8 @@ var
 implementation
 
 uses
-  FMX.DialogService, TGC.Entity.User, System.JSON, TGC.Classes;
+  FMX.DialogService, TGC.Entity.User, System.JSON, TGC.Classes,
+  TGC.Builder.SendMessage, TGC.Entity.Message;
 
 {$R *.fmx}
 
@@ -51,10 +55,29 @@ begin
     end);
 end;
 
+procedure TForm4.Button2Click(Sender: TObject);
+begin
+  TelegramClient1.Methods.SendMessage(
+    TBuildSendMessage.Create.InputMessageContent(
+      TInputMessageText.Create.Text(
+          TFormattedText.Create.Text('Hello')
+        )
+    ),
+    procedure(Msg: TtgMessage)
+    begin
+
+    end);
+end;
+
 procedure TForm4.FormCreate(Sender: TObject);
 begin
   //if TelegramClient1.IsInitialized then
   //  ShowMessage('ok');
+end;
+
+procedure TForm4.FormDestroy(Sender: TObject);
+begin
+  TThread.RemoveQueuedEvents(nil);
 end;
 
 procedure TForm4.TelegramClient1AuthReady(Sender: TObject);

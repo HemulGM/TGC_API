@@ -12,6 +12,9 @@
         <Projects Include="..\#Fork\tdlib-delphi\testando.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="Samples\UpdateOptionJSToClass\Project32.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -47,14 +50,23 @@
     <Target Name="testando:Make">
         <MSBuild Projects="..\#Fork\tdlib-delphi\testando.dproj" Targets="Make"/>
     </Target>
+    <Target Name="Project32">
+        <MSBuild Projects="Samples\UpdateOptionJSToClass\Project32.dproj"/>
+    </Target>
+    <Target Name="Project32:Clean">
+        <MSBuild Projects="Samples\UpdateOptionJSToClass\Project32.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Project32:Make">
+        <MSBuild Projects="Samples\UpdateOptionJSToClass\Project32.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="TGClient;TGC_API;testando"/>
+        <CallTarget Targets="TGClient;TGC_API;testando;Project32"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="TGClient:Clean;TGC_API:Clean;testando:Clean"/>
+        <CallTarget Targets="TGClient:Clean;TGC_API:Clean;testando:Clean;Project32:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="TGClient:Make;TGC_API:Make;testando:Make"/>
+        <CallTarget Targets="TGClient:Make;TGC_API:Make;testando:Make;Project32:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

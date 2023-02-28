@@ -104,7 +104,6 @@ procedure TThreadObject<T>.Unlock;
 begin
   TMonitor.Exit(FLock);
 end;
-
 { TThreadDict<TKey, ValueType> }
 
 procedure TThreadDict<KeyType, ValueType>.Add(const Key: KeyType; const Item: ValueType);
@@ -136,7 +135,6 @@ begin
     Unlock;
   end;
 end;
-
 { TSafeDictionary<KeyType, ValueType> }
 
 constructor TSafeDictionary<KeyType, ValueType>.Create;

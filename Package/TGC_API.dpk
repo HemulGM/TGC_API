@@ -40,6 +40,13 @@ contains
   HGM.JSONParams in '..\Sources\HGM.JSONParams.pas',
   TGC.Handler.Error in '..\Sources\TGC.Handler.Error.pas',
   TGC.Entity.User in '..\Sources\TGC.Entity.User.pas',
-  TGC.Classes in '..\Sources\TGC.Classes.pas';
+  TGC.Classes in '..\Sources\TGC.Classes.pas',
+  TGC.Handler.UpdateOption in '..\Sources\TGC.Handler.UpdateOption.pas',
+  TGC.Options in '..\Sources\TGC.Options.pas',
+  TGC.Entity.Files in '..\Sources\TGC.Entity.Files.pas',
+  TGC.Entity.ProfilePhoto in '..\Sources\TGC.Entity.ProfilePhoto.pas',
+  TGC.Entity.Message in '..\Sources\TGC.Entity.Message.pas',
+  TGC.Entity.Sticker in '..\Sources\TGC.Entity.Sticker.pas',
+  TGC.Builder.SendMessage in '..\Sources\TGC.Builder.SendMessage.pas';
 
 end.

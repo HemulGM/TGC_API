@@ -605,7 +605,7 @@ begin
   try
     // Обработка запросов с указанным RequestId
     AExtra := JSON.GetValue<TRequestId>('@extra', -1);
-    if AExtra <> 0 then
+    if AExtra >= 0 then
       if FMethods.Proc(AExtra, JSON) then
         Exit;
 
@@ -899,7 +899,7 @@ begin
           if FieldName.IsEmpty then
             JO := JSON
           else
-            JO := JSON.GetValue(FieldName, nil);
+            JO := JSON.GetValue<TJSONObject>(FieldName, nil);
           if Assigned(JO) then
           begin
             Obj := TJson.JsonToObject<T>(JO);

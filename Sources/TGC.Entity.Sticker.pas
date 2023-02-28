@@ -3,7 +3,7 @@
 interface
 
 uses
-  TGC.Entity.Files;
+  TGC.Entity.Files, REST.Json.Types;
 
 type
   /// <summary>
@@ -11,12 +11,13 @@ type
   /// </summary>
   TtgThumbnailFormat = class
   private
+    [JSONName('@type')]
     Ftype: string;
   public
     /// <summary>
     /// thumbnailFormatGif, thumbnailFormatJpeg, thumbnailFormatMpeg4, thumbnailFormatPng, thumbnailFormatTgs, and thumbnailFormatWebp
     /// </summary>
-    property &Type: string read Ftype write Ftype;
+    property AType: string read Ftype write Ftype;
   end;
 
   /// <summary>
@@ -71,6 +72,7 @@ type
   /// </summary>
   TtgVectorPathCommand = class
   private
+    [JSONName('@type')]
     Ftype: string;
     FEnd_control_point: TtgPoint;
     FEnd_point: TtgPoint;
@@ -79,7 +81,7 @@ type
     /// <summary>
     /// vectorPathCommandCubicBezierCurve, and vectorPathCommandLine.
     /// </summary>
-    property &Type: string read Ftype write Ftype;
+    property AType: string read Ftype write Ftype;
     /// <summary>
     /// The end control point of the curve.
     /// </summary>
@@ -111,16 +113,18 @@ type
 
   TtgStickerFullType = class
   private
+    [JSONName('@type')]
     Ftype: string;
   public
-    property &Type: string read Ftype write Ftype;
+    property AType: string read Ftype write Ftype;
   end;
 
   TtgStickerFormat = class
   private
+    [JSONName('@type')]
     Ftype: string;
   public
-    property &Type: string read Ftype write Ftype;
+    property AType: string read Ftype write Ftype;
   end;
 
   TTgMaskPosition = class

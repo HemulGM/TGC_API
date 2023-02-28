@@ -20,7 +20,8 @@ uses
   TGC.Entity.Files in '..\..\Sources\TGC.Entity.Files.pas',
   TGC.Entity.Message in '..\..\Sources\TGC.Entity.Message.pas',
   TGC.Entity.Sticker in '..\..\Sources\TGC.Entity.Sticker.pas',
-  TGC.Builder.SendMessage in '..\..\Sources\TGC.Builder.SendMessage.pas';
+  TGC.Builder.SendMessage in '..\..\Sources\TGC.Builder.SendMessage.pas',
+  TGC.Entity.FormatedText in '..\..\Sources\TGC.Entity.FormatedText.pas';
 
 {$R *.res}
 

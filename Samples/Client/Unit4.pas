@@ -60,12 +60,15 @@ begin
   TelegramClient1.Methods.SendMessage(
     TBuildSendMessage.Create.InputMessageContent(
       TInputMessageText.Create.Text(
-          TFormattedText.Create.Text('Hello')
+          TFormattedText.Create.Text('Hello').Entities(
+           [TTextEntity.Create.Offset(0).Length(2).EntityType(TTextEntityTypePreCode.Create('pascal'))]
+           )
         )
-    ),
+    ).ChatId(1288857534), //268284944
     procedure(Msg: TtgMessage)
     begin
-
+      // сообщение отправлено
+      Memo1.Lines.Add('sended msg');
     end);
 end;
 

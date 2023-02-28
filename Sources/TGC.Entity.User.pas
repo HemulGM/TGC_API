@@ -17,7 +17,7 @@ type
     /// <summary>
     /// userTypeBot, userTypeDeleted, userTypeRegular, and userTypeUnknown
     /// </summary>
-    property &Type: string read FType write FType;
+    property AType: string read FType write FType;
   end;
 
   /// <summary>
@@ -33,7 +33,7 @@ type
     /// <summary>
     /// userStatusEmpty, userStatusLastMonth, userStatusLastWeek, userStatusOffline, userStatusOnline, and userStatusRecently
     /// </summary>
-    property &Type: string read Ftype write Ftype;
+    property AType: string read Ftype write Ftype;
     property WasOnline: TDateTime read FWas_online write FWas_online;
   end;
 
@@ -173,7 +173,7 @@ end;
 function TtgUser.GetType: string;
 begin
   if Assigned(FType) then
-    Result := FType.&Type;
+    Result := FType.FType;
 end;
 
 end.

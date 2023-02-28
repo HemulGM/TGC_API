@@ -3,7 +3,8 @@
 interface
 
 uses
-  TGC.Entity.Files, REST.JsonReflect, REST.Json.Interceptors, TGC.Entity.Sticker;
+  TGC.Entity.Files, REST.JsonReflect, REST.Json.Interceptors, TGC.Entity.Sticker,
+  REST.Json.Types, TGC.Entity.FormatedText;
 
 type
   /// <summary>
@@ -11,11 +12,13 @@ type
   /// </summary>
   TtgMessageContent = class
   private
+    [JSONName('@type')]
     Ftype: string;
     FAnimated_emoji: TtgAnimatedEmoji;
     FEmoji: string;
+    FText: TtgFormatedText;
   public
-    property &Type: string read Ftype write Ftype;
+    property AType: string read Ftype write Ftype;
     /// <summary>
     /// The animated emoji.
     /// </summary>
@@ -24,6 +27,10 @@ type
     /// The corresponding emoji.
     /// </summary>
     property Emoji: string read FEmoji write FEmoji;
+    /// <summary>
+    ///  A text message.
+    /// </summary>
+    property Text: TtgFormatedText read FText write FText;
     destructor Destroy; override;
   end;
 
@@ -32,6 +39,7 @@ type
   /// </summary>
   TtgMessageSender = class
   private
+    [JSONName('@type')]
     Ftype: string;
     FUser_id: Int64;
     FChat_id: Int64;
@@ -39,7 +47,7 @@ type
     /// <summary>
     /// messageSenderChat, and messageSenderUser
     /// </summary>
-    property &Type: string read Ftype write Ftype;
+    property AType: string read Ftype write Ftype;
     /// <summary>
     /// Identifier of the user that sent the message.
     /// </summary>
@@ -226,7 +234,8 @@ implementation
 
 destructor TtgMessageContent.Destroy;
 begin
-  FAnimated_emoji.free;
+  FAnimated_emoji.Free;
+  FText.Free;
   inherited;
 end;
 

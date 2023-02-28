@@ -47,6 +47,7 @@ contains
   TGC.Entity.ProfilePhoto in '..\Sources\TGC.Entity.ProfilePhoto.pas',
   TGC.Entity.Message in '..\Sources\TGC.Entity.Message.pas',
   TGC.Entity.Sticker in '..\Sources\TGC.Entity.Sticker.pas',
-  TGC.Builder.SendMessage in '..\Sources\TGC.Builder.SendMessage.pas';
+  TGC.Builder.SendMessage in '..\Sources\TGC.Builder.SendMessage.pas',
+  TGC.Entity.FormatedText in '..\Sources\TGC.Entity.FormatedText.pas';
 
 end.

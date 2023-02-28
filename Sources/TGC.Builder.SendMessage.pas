@@ -131,7 +131,7 @@ type
     /// <summary>
     /// HTTP or tg:// URL to be opened when the link is clicked.
     /// </summary>
-    constructor Create(const Url: Int64); reintroduce;
+    constructor Create(const Url: string); reintroduce;
   end;
 
   /// <summary>
@@ -164,7 +164,7 @@ type
     /// Type of the entity.
     /// </summary>
     function EntityType(const Value: TTextEntityType): TTextEntity;
-
+    constructor Create; reintroduce;
   end;
 
   TFormattedText = class(TParam)
@@ -232,7 +232,7 @@ end;
 
 constructor TBuildSendMessage.Create;
 begin
-  inherited Create('InputMessageContent');
+  inherited Create('sendMessage');
 end;
 
 function TBuildSendMessage.InputMessageContent(const Value: TInputMessageContent): TBuildSendMessage;
@@ -290,6 +290,11 @@ begin
 end;
 
 { TTextEntity }
+
+constructor TTextEntity.Create;
+begin
+  inherited Create('textEntity');
+end;
 
 function TTextEntity.EntityType(const Value: TTextEntityType): TTextEntity;
 begin
@@ -416,7 +421,7 @@ end;
 
 { TTextEntityTypeTextUrl }
 
-constructor TTextEntityTypeTextUrl.Create(const Url: Int64);
+constructor TTextEntityTypeTextUrl.Create(const Url: string);
 begin
   inherited Create('textEntityTypeTextUrl');
   Add('url', Url);

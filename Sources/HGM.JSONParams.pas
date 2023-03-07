@@ -15,7 +15,8 @@ type
     constructor Create; virtual;
     destructor Destroy; override;
     function Add(const Key: string; const Value: string): TJSONParam; overload; virtual;
-    function Add(const Key: string; const Value: Integer): TJSONParam; overload; virtual;
+    function Add(const Key: string; const Value: Int64): TJSONParam; overload; virtual;
+    function Add(const Key: string; const Value: integer): TJSONParam; overload; virtual;
     function Add(const Key: string; const Value: Extended): TJSONParam; overload; virtual;
     function Add(const Key: string; const Value: Boolean): TJSONParam; overload; virtual;
     function Add(const Key: string; const Value: TDateTime; Format: string): TJSONParam; overload; virtual;
@@ -23,9 +24,12 @@ type
     function Add(const Key: string; const Value: TJSONValue): TJSONParam; overload; virtual;
     function Add(const Key: string; const Value: TJSONParam): TJSONParam; overload; virtual;
     function Add(const Key: string; Value: TArray<string>): TJSONParam; overload; virtual;
-    function Add(const Key: string; Value: TArray<Integer>): TJSONParam; overload; virtual;
+    function Add(const Key: string; Value: TArray<Byte>): TJSONParam; overload; virtual;
+    function Add(const Key: string; Value: TArray<Int64>): TJSONParam; overload; virtual;
+    function Add(const Key: string; Value: TArray<integer>): TJSONParam; overload; virtual;
     function Add(const Key: string; Value: TArray<TJSONValue>): TJSONParam; overload; virtual;
     function Add(const Key: string; Value: TArray<TJSONParam>): TJSONParam; overload; virtual;
+    function Add(const Key: string; Value: TArray<TArray<TJSONParam>>): TJSONParam; overload; virtual;
     function GetOrCreateObject(const Name: string): TJSONObject;
     function GetOrCreate<T: TJSONValue, constructor>(const Name: string): T;
     procedure Delete(const Key: string); virtual;
@@ -113,7 +117,7 @@ begin
   Result := Self;
 end;
 
-function TJSONParam.Add(const Key: string; const Value: Integer): TJSONParam;
+function TJSONParam.Add(const Key: string; const Value: Int64): TJSONParam;
 begin
   Add(Key, TJSONNumber.Create(Value));
   Result := Self;
@@ -155,10 +159,42 @@ begin
   Result := Self;
 end;
 
-function TJSONParam.Add(const Key: string; Value: TArray<Integer>): TJSONParam;
+function TJSONParam.Add(const Key: string; Value: TArray<Byte>): TJSONParam;
+var
+  JArr: TJSONArray;
+  Item: Byte;
+begin
+  JArr := TJSONArray.Create;
+  for Item in Value do
+    JArr.Add(Item);
+
+  Add(Key, JArr);
+  Result := Self;
+end;
+
+function TJSONParam.Add(const Key: string; Value: TArray<integer>): TJSONParam;
 var
   JArr: TJSONArray;
   Item: Integer;
+begin
+  JArr := TJSONArray.Create;
+  for Item in Value do
+    JArr.Add(Item);
+
+  Add(Key, JArr);
+  Result := Self;
+end;
+
+function TJSONParam.Add(const Key: string; const Value: integer): TJSONParam;
+begin
+  Add(Key, TJSONNumber.Create(Value));
+  Result := Self;
+end;
+
+function TJSONParam.Add(const Key: string; Value: TArray<Int64>): TJSONParam;
+var
+  JArr: TJSONArray;
+  Item: Int64;
 begin
   JArr := TJSONArray.Create;
   for Item in Value do
@@ -254,6 +290,33 @@ begin
     Result.Free;
     raise;
   end;
+end;
+
+function TJSONParam.Add(const Key: string; Value: TArray<TArray<TJSONParam>>): TJSONParam;
+var
+  JArr: TJSONArray;
+  JRow: TJSONArray;
+  Item: TJSONParam;
+  ItemRow: TArray<TJSONParam>;
+begin
+  JArr := TJSONArray.Create;
+  for ItemRow in Value do
+  begin
+    JRow := TJSONArray.Create;
+    for Item in ItemRow do
+    begin
+      try
+        JRow.AddElement(Item.JSON);
+        Item.JSON := nil;
+      finally
+        Item.Free;
+      end;
+    end;
+    JArr.Add(JRow);
+  end;
+
+  Add(Key, JArr);
+  Result := Self;
 end;
 
 end.

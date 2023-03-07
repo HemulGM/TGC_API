@@ -273,6 +273,7 @@
         <DCCReference Include="..\..\Sources\TGC.Entity.Sticker.pas"/>
         <DCCReference Include="..\..\Sources\TGC.Builder.SendMessage.pas"/>
         <DCCReference Include="..\..\Sources\TGC.Entity.FormatedText.pas"/>
+        <DCCReference Include="..\..\Sources\TGC.Builder.GetMe.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
@@ -1147,6 +1148,7 @@
                 <Platform value="Win32">True</Platform>
                 <Platform value="Win64">True</Platform>
             </Platforms>
+            <ModelSupport>False</ModelSupport>
         </BorlandProject>
         <ProjectFileVersion>12</ProjectFileVersion>
     </ProjectExtensions>

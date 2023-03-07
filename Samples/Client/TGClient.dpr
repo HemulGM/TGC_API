@@ -21,7 +21,8 @@ uses
   TGC.Entity.Message in '..\..\Sources\TGC.Entity.Message.pas',
   TGC.Entity.Sticker in '..\..\Sources\TGC.Entity.Sticker.pas',
   TGC.Builder.SendMessage in '..\..\Sources\TGC.Builder.SendMessage.pas',
-  TGC.Entity.FormatedText in '..\..\Sources\TGC.Entity.FormatedText.pas';
+  TGC.Entity.FormatedText in '..\..\Sources\TGC.Entity.FormatedText.pas',
+  TGC.Builder.GetMe in '..\..\Sources\TGC.Builder.GetMe.pas';
 
 {$R *.res}
 

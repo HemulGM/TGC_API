@@ -14,27 +14,74 @@ object Form4: TForm4
     Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
     DataDetectorTypes = []
     Position.X = 8.000000000000000000
-    Position.Y = 8.000000000000000000
+    Position.Y = 38.000000000000000000
     Size.Width = 449.000000000000000000
-    Size.Height = 417.000000000000000000
+    Size.Height = 434.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
     Viewport.Width = 445.000000000000000000
-    Viewport.Height = 413.000000000000000000
+    Viewport.Height = 430.000000000000000000
   end
-  object Button1: TButton
-    Position.X = 465.000000000000000000
-    Position.Y = 8.000000000000000000
-    TabOrder = 3
-    Text = 'Button1'
-    OnClick = Button1Click
-  end
-  object Button2: TButton
+  object ButtonGetMe: TButton
     Position.X = 465.000000000000000000
     Position.Y = 38.000000000000000000
+    Size.Width = 136.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+    Text = 'ButtonGetMe'
+    OnClick = ButtonGetMeClick
+  end
+  object ButtonSendMessage: TButton
+    Position.X = 465.000000000000000000
+    Position.Y = 68.000000000000000000
+    Size.Width = 136.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
     TabOrder = 6
-    Text = 'Button2'
-    OnClick = Button2Click
+    Text = 'ButtonSendMessage'
+    OnClick = ButtonSendMessageClick
+  end
+  object ButtonAuth: TButton
+    Position.X = 116.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 8
+    Text = 'ButtonAuth'
+    OnClick = ButtonAuthClick
+  end
+  object EditNumber: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 10
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    TextPrompt = 'Phone number'
+  end
+  object Edit1: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 12
+    Text = 'Label'
+    Position.X = 472.000000000000000000
+    Position.Y = 272.000000000000000000
+    Size.Width = 129.000000000000000000
+    Size.Height = 33.000000000000000000
+    Size.PlatformDefault = False
+    StyledSettings = [Family, Size, Style]
+    OnChangeTracking = Edit1ChangeTracking
+    OnEnter = Edit1Enter
+    OnExit = Edit1Exit
+    object LabelFormat: TLabel
+      Align = Client
+      Margins.Left = 3.000000000000000000
+      Margins.Top = 3.000000000000000000
+      Margins.Right = 3.000000000000000000
+      Margins.Bottom = 3.000000000000000000
+      Size.Width = 123.000000000000000000
+      Size.Height = 27.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'LabelFormat'
+      Visible = False
+      TabOrder = 0
+    end
   end
   object TelegramClient1: TTelegramClient
     OnReceive = TelegramClient1Receive
@@ -48,7 +95,6 @@ object Form4: TForm4
     Parameters.ApplicationVersion = '0.1'
     ApiId = 29265223
     ApiHash = 'd8c53e8da942aa5bfe1147d307196cb5'
-    PhoneNumber = '+79530021368'
     OnNeedAuthCode = TelegramClient1NeedAuthCode
     OnRegistration = TelegramClient1Registration
     OnNeedAuthPassword = TelegramClient1NeedAuthPassword
@@ -57,6 +103,6 @@ object Form4: TForm4
     OnClose = TelegramClient1Close
     OnError = TelegramClient1Error
     Left = 512
-    Top = 96
+    Top = 168
   end
 end

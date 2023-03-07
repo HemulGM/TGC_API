@@ -124,6 +124,9 @@ type
     property SyncCallback: Boolean read FSync write SetSync;
   public
     procedure GetMe(Callback: TProc<TtgUser>);
+    /// <summary>
+    /// Sends a message. Returns the sent message.
+    /// </summary>
     procedure SendMessage(Params: TBuildSendMessage; Callback: TProc<TtgMessage>);
     procedure Execute<T: class, constructor>(Query: TParam; FieldName: string; Callback: TProc<T>); overload;
     procedure Execute(Query: TParam; FieldName: string; Callback: TProc<TJSONObject>); overload;
@@ -177,14 +180,15 @@ type
     procedure SetOnNeedAuthConfirm(const Value: TOnNeedAuthConfirm);
     procedure SetOnAuthReady(const Value: TNotifyEvent);
     procedure SetOnError(const Value: TOnError);
-    procedure InternalRecreate;
+    function InternalRecreate: Boolean;
     procedure DoClose;
     procedure SetOnClose(const Value: TNotifyEvent);
     procedure SetSyncMethodsCallback(const Value: Boolean);
     function GetSyncMethodsCallback: Boolean;
     procedure Sync(Proc: TProc);
   protected
-    procedure InitializateLib;
+    FInitializedLib: Boolean;
+    function InitializateLib: Boolean;
     procedure InternalClose;
   public
     // service
@@ -203,9 +207,9 @@ type
     // user
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure Recreate;
     property Client: TVoid read FClient;
     property IsInitialized: Boolean read GetIsInitialized;
+    function Initializate: Boolean;
     procedure SetAuthCode(const Value: string);
     procedure SetRegisterUser(const FirstName, LastName: string);
     procedure SetAuthPassword(const Value: string);
@@ -316,7 +320,7 @@ type
 implementation
 
 uses
-  TGC.Handler.Error, REST.Json, TGC.Handler.UpdateOption;
+  TGC.Handler.Error, REST.Json, TGC.Handler.UpdateOption, TGC.Builder.GetMe;
 
 { TTelegramClientCustom }
 
@@ -345,6 +349,7 @@ end;
 constructor TTelegramClientCustom.Create;
 begin
   inherited;
+  FInitializedLib := False;
   FOptions := TtgOptions.Create;
   FMethods := TDLibMethods.Create(Self);
   FHandlers := THandlers.Create([doOwnsValues]);
@@ -356,8 +361,6 @@ begin
   FTimeout := DEFAULT_WAIT_TIMEOUT;
   FSyncEvents := False;
   FDoStopReceiver := False;
-  if not (csDesigning in ComponentState) then
-    InitializateLib;
 end;
 
 destructor TTelegramClientCustom.Destroy;
@@ -451,22 +454,24 @@ begin
   FHandlers.Add('updateOption', TUpdateOption.Create(Self));
 end;
 
-procedure TTelegramClientCustom.Recreate;
+function TTelegramClientCustom.InternalRecreate: Boolean;
 begin
   InternalClose;
-  InternalRecreate;
-end;
-
-procedure TTelegramClientCustom.InternalRecreate;
-begin
   FClient := JsonCreateClient;
   StartReceiver;
+  Result := IsInitialized;
 end;
 
-procedure TTelegramClientCustom.InitializateLib;
+function TTelegramClientCustom.Initializate: Boolean;
 begin
-  if TDLibInitialize then
-    InternalRecreate;
+  Result := InitializateLib and InternalRecreate;
+end;
+
+function TTelegramClientCustom.InitializateLib: Boolean;
+begin
+  if not FInitializedLib then
+    FInitializedLib := TDLibInitialize;
+  Result := FInitializedLib;
 end;
 
 procedure TTelegramClientCustom.AuthReady;
@@ -931,7 +936,7 @@ end;
 
 procedure TDLibMethods.GetMe(Callback: TProc<TtgUser>);
 begin
-  Execute<TtgUser>(TGetMe.Create, '', Callback);
+  Execute<TtgUser>(TBuildGetMe.Create, '', Callback);
 end;
 
 function TDLibMethods.NewRequestId: TRequestId;

@@ -35,10 +35,6 @@ type
     constructor Create(AType: string); reintroduce;
   end;
 
-  TGetMe = class(TParam)
-    constructor Create; reintroduce;
-  end;
-
 implementation
 
 { TParam }
@@ -52,13 +48,6 @@ end;
 function TParam.Extra(const Value: Int64): TParam;
 begin
   Result := TParam(Add('@extra', Value));
-end;
-
-{ TGetMe }
-
-constructor TGetMe.Create;
-begin
-  inherited Create('getMe');
 end;
 
 { TThreadObject<T> }

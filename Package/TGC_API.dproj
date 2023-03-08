@@ -142,19 +142,27 @@
         <DCCReference Include="TGC.Component.pas"/>
         <DCCReference Include="..\Sources\HGM.JSONParams.pas"/>
         <DCCReference Include="..\Sources\TGC.Handler.Error.pas"/>
-        <DCCReference Include="..\Sources\TGC.Entity.User.pas"/>
         <DCCReference Include="..\Sources\TGC.Classes.pas"/>
         <DCCReference Include="..\Sources\TGC.Handler.UpdateOption.pas"/>
         <DCCReference Include="..\Sources\TGC.Options.pas"/>
-        <DCCReference Include="..\Sources\TGC.Entity.Files.pas"/>
-        <DCCReference Include="..\Sources\TGC.Entity.ProfilePhoto.pas"/>
-        <DCCReference Include="..\Sources\TGC.Entity.Message.pas"/>
-        <DCCReference Include="..\Sources\TGC.Entity.Sticker.pas"/>
         <DCCReference Include="..\Sources\TGC.Builder.SendMessage.pas"/>
-        <DCCReference Include="..\Sources\TGC.Entity.FormatedText.pas"/>
         <DCCReference Include="..\Sources\TGC.Builder.GetMe.pas"/>
         <DCCReference Include="..\Sources\TGC.Builder.SendMessageAlbum.pas"/>
+        <DCCReference Include="..\Sources\TGC.Builder.GetUser.pas"/>
         <DCCReference Include="..\Sources\TGC.Entity.AObject.pas"/>
+        <DCCReference Include="..\Sources\TGC.Entity.ChatPhoto.pas"/>
+        <DCCReference Include="..\Sources\TGC.Entity.Files.pas"/>
+        <DCCReference Include="..\Sources\TGC.Entity.FormatedText.pas"/>
+        <DCCReference Include="..\Sources\TGC.Entity.Message.pas"/>
+        <DCCReference Include="..\Sources\TGC.Entity.MiniThumbnail.pas"/>
+        <DCCReference Include="..\Sources\TGC.Entity.PhotoSize.pas"/>
+        <DCCReference Include="..\Sources\TGC.Entity.ProfilePhoto.pas"/>
+        <DCCReference Include="..\Sources\TGC.Entity.Sticker.pas"/>
+        <DCCReference Include="..\Sources\TGC.Entity.User.pas"/>
+        <DCCReference Include="..\Sources\TGC.Entity.UserFullInfo.pas"/>
+        <DCCReference Include="..\Sources\TGC.Entity.AnimatedChatPhoto.pas"/>
+        <DCCReference Include="..\Sources\TGC.Entity.BotCommand.pas"/>
+        <DCCReference Include="..\Sources\TGC.Builder.GetUserFullInfo.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

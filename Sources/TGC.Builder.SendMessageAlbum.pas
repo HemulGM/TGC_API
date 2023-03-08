@@ -23,7 +23,7 @@ type
     /// </summary>
     function ReplyToMessageId(const Value: Int64): TSendMessageAlbum;
     /// <summary>
-    /// The content of the message to be sent.
+    /// Contents of messages to be sent. At most 10 messages can be added to an album.
     /// </summary>
     function InputMessageContents(const Value: TArray<TInputMessageContent>): TSendMessageAlbum;
     /// <summary>

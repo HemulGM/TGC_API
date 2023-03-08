@@ -6,7 +6,8 @@ uses
   System.Classes, System.SysUtils, System.Generics.Collections, System.Threading,
   System.JSON, TGC.Wrapper, TGC.Handler, TGC.Handler.UpdateAuthorizationState,
   TGC.Entity.User, TGC.Classes, TGC.Options, TGC.Builder.SendMessage,
-  TGC.Entity.Message, TGC.Builder.SendMessageAlbum;
+  TGC.Entity.Message, TGC.Builder.SendMessageAlbum, TGC.Builder.GetMe,
+  TGC.Builder.GetUser, TGC.Entity.UserFullInfo, TGC.Builder.GetUserFullInfo;
 
 const
   DEFAULT_WAIT_TIMEOUT = 10.0;
@@ -123,7 +124,18 @@ type
     function Proc(const RequestId: TRequestId; JSON: TJSONObject): Boolean;
     property SyncCallback: Boolean read FSync write SetSync;
   public
+    /// <summary>
+    /// Returns the current user.
+    /// </summary>
     procedure GetMe(Callback: TProc<TtgUser>);
+    /// <summary>
+    /// Returns information about a user by their identifier. This is an offline request if the current user is not a bot.
+    /// </summary>
+    procedure GetUser(UserId: Int64; Callback: TProc<TtgUser>);
+    /// <summary>
+    /// Returns full information about a user by their identifier.
+    /// </summary>
+    procedure GetUserFullInfo(UserId: Int64; Callback: TProc<TtgUserFullInfo>);
     /// <summary>
     /// Sends a message. Returns the sent message.
     /// </summary>
@@ -324,7 +336,7 @@ type
 implementation
 
 uses
-  TGC.Handler.Error, REST.Json, TGC.Handler.UpdateOption, TGC.Builder.GetMe;
+  TGC.Handler.Error, REST.Json, TGC.Handler.UpdateOption;
 
 { TTelegramClientCustom }
 
@@ -612,6 +624,9 @@ var
 begin
   if Assigned(JSON) then
   try
+    // Событие с сырыми данными для пользовательской обработки
+    DoReceiveRaw(JSON.ToJSON);
+
     // Обработка запросов с указанным RequestId
     AExtra := JSON.GetValue<TRequestId>('@extra', -1);
     if AExtra >= 0 then
@@ -624,9 +639,6 @@ begin
       AHandler.Execute(JSON);
       Exit;
     end;
-
-    // Событие с сырыми данными для пользовательской обработки
-    DoReceiveRaw(JSON.ToJSON);
   finally
     JSON.Free;
   end;
@@ -940,7 +952,17 @@ end;
 
 procedure TDLibMethods.GetMe(Callback: TProc<TtgUser>);
 begin
-  Execute<TtgUser>(TBuildGetMe.Create, '', Callback);
+  Execute<TtgUser>(TGetMe.Create, '', Callback);
+end;
+
+procedure TDLibMethods.GetUser(UserId: Int64; Callback: TProc<TtgUser>);
+begin
+  Execute<TtgUser>(TGetUser.Create.UserId(UserId), '', Callback);
+end;
+
+procedure TDLibMethods.GetUserFullInfo(UserId: Int64; Callback: TProc<TtgUserFullInfo>);
+begin
+  Execute<TtgUserFullInfo>(TGetUserFullInfo.Create.UserId(UserId), '', Callback);
 end;
 
 function TDLibMethods.NewRequestId: TRequestId;

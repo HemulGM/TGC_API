@@ -6,7 +6,10 @@ uses
   TGC.Classes;
 
 type
-  TBuildGetMe = class(TParam)
+  /// <summary>
+  /// Returns the current user.
+  /// </summary>
+  TGetMe = class(TParam)
     constructor Create; reintroduce;
   end;
 
@@ -14,7 +17,7 @@ implementation
 
 { TGetMe }
 
-constructor TBuildGetMe.Create;
+constructor TGetMe.Create;
 begin
   inherited Create('getMe');
 end;

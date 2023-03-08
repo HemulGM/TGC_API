@@ -28,7 +28,7 @@ object Form4: TForm4
     Size.Width = 136.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 3
+    TabOrder = 4
     Text = 'ButtonGetMe'
     OnClick = ButtonGetMeClick
   end
@@ -38,27 +38,27 @@ object Form4: TForm4
     Size.Width = 136.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 6
+    TabOrder = 7
     Text = 'ButtonSendMessage'
     OnClick = ButtonSendMessageClick
   end
   object ButtonAuth: TButton
     Position.X = 116.000000000000000000
     Position.Y = 8.000000000000000000
-    TabOrder = 8
+    TabOrder = 9
     Text = 'ButtonAuth'
     OnClick = ButtonAuthClick
   end
   object EditNumber: TEdit
     Touch.InteractiveGestures = [LongTap, DoubleTap]
-    TabOrder = 10
+    TabOrder = 11
     Position.X = 8.000000000000000000
     Position.Y = 8.000000000000000000
     TextPrompt = 'Phone number'
   end
   object Edit1: TEdit
     Touch.InteractiveGestures = [LongTap, DoubleTap]
-    TabOrder = 12
+    TabOrder = 13
     Text = 'Label'
     Position.X = 472.000000000000000000
     Position.Y = 272.000000000000000000
@@ -82,6 +82,16 @@ object Form4: TForm4
       Visible = False
       TabOrder = 0
     end
+  end
+  object Button1: TButton
+    Position.X = 465.000000000000000000
+    Position.Y = 98.000000000000000000
+    Size.Width = 136.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+    Text = 'ButtonGetUserFullInfo'
+    OnClick = Button1Click
   end
   object TelegramClient1: TTelegramClient
     OnReceive = TelegramClient1Receive

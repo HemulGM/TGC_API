@@ -19,6 +19,7 @@ type
     EditNumber: TEdit;
     Edit1: TEdit;
     LabelFormat: TLabel;
+    Button1: TButton;
     procedure FormCreate(Sender: TObject);
     procedure TelegramClient1NeedAuthCode(Sender: TObject);
     procedure TelegramClient1AuthReady(Sender: TObject);
@@ -35,6 +36,7 @@ type
     procedure Edit1Enter(Sender: TObject);
     procedure Edit1Exit(Sender: TObject);
     procedure Edit1ChangeTracking(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   public
   end;
 
@@ -46,7 +48,7 @@ implementation
 uses
   FMX.DialogService, TGC.Entity.User, System.JSON, TGC.Classes, System.DateUtils,
   TGC.Builder.SendMessage, TGC.Entity.Message, TGC.Builder.GetMe,
-  TGC.Builder.SendMessageAlbum;
+  TGC.Builder.SendMessageAlbum, TGC.Entity.UserFullInfo;
 
 {$R *.fmx}
 
@@ -58,7 +60,7 @@ begin
       Memo1.Lines.Add('TelegramClient1.Methods.GetMe callback'#13#10 + User.FirstName + ' ' + User.LastName);
     end);
 
-  TelegramClient1.Methods.Execute(TBuildGetMe.Create, '',
+  TelegramClient1.Methods.Execute(TGetMe.Create, '',
     procedure(User: TJSONObject)
     begin
       Memo1.Lines.Add('TelegramClient1.Methods.GetMe callback'#13#10 + User.Format);
@@ -123,6 +125,18 @@ procedure TForm4.Edit1Exit(Sender: TObject);
 begin
   LabelFormat.Visible := True;
   Edit1.FontColor := TAlphaColorRec.Null;
+end;
+
+procedure TForm4.Button1Click(Sender: TObject);
+begin
+  TelegramClient1.Methods.GetUser(1065413441,
+    procedure(Info: TtgUser)
+    begin
+      if Info.IsError then
+        Memo1.Lines.Add(Info.Message)
+      else
+        Memo1.Lines.Add('FirstName ' + Info.FirstName);
+    end);
 end;
 
 procedure TForm4.ButtonAuthClick(Sender: TObject);

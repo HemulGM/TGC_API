@@ -3,7 +3,7 @@
 interface
 
 uses
-  TGC.Entity.Files, REST.Json.Types;
+  TGC.Entity.Files, REST.Json.Types, TGC.Entity.AObject;
 
 type
   /// <summary>
@@ -130,7 +130,7 @@ type
   TTgMaskPosition = class
   end;
 
-  TtgSticker = class
+  TtgSticker = class(TtgObject)
   private
     FEmoji: string;
     FFormat: TtgStickerFormat;

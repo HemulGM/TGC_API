@@ -3,7 +3,8 @@
 interface
 
 uses
-  Rest.Json.Types, Rest.JsonReflect, Rest.Json.Interceptors, TGC.Entity.Files, TGC.Entity.ProfilePhoto;
+  Rest.Json.Types, Rest.JsonReflect, Rest.Json.Interceptors, TGC.Entity.Files, TGC.Entity.ProfilePhoto,
+  TGC.Entity.AObject;
 
 type
   /// <summary>
@@ -54,7 +55,7 @@ type
   /// <summary>
   /// Represents a user.
   /// </summary>
-  TtgUser = class
+  TtgUser = class(TtgObject)
   private
     FAdded_to_attachment_menu: Boolean;
     FFirst_name: string;

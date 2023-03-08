@@ -4,7 +4,7 @@ interface
 
 uses
   TGC.Entity.Files, REST.JsonReflect, REST.Json.Interceptors, TGC.Entity.Sticker,
-  REST.Json.Types, TGC.Entity.FormatedText;
+  REST.Json.Types, TGC.Entity.FormatedText, TGC.Entity.AObject;
 
 type
   /// <summary>
@@ -61,7 +61,7 @@ type
   /// <summary>
   /// Describes a message.
   /// </summary>
-  TtgMessage = class
+  TtgMessage = class(TtgObject)
   private
     FAuthor_signature: string;
     FAuto_delete_in: Extended;

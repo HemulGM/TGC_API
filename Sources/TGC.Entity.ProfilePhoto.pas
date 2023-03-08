@@ -3,7 +3,7 @@
 interface
 
 uses
-  TGC.Entity.Files;
+  TGC.Entity.Files, TGC.Entity.AObject;
 
 type
   /// <summary>
@@ -32,7 +32,7 @@ type
   /// <summary>
   /// Describes a user profile photo.
   /// </summary>
-  TTgProfilePhoto = class
+  TTgProfilePhoto = class(TtgObject)
   private
     FBig: TtgFile;
     FHas_animation: Boolean;

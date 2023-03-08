@@ -821,7 +821,7 @@ type
     /// <summary>
     /// Point in time (Unix timestamp) when the poll will automatically be closed; for bots only.
     /// </summary>
-    function CloseDate(const Value: Int32): TInputMessagePoll;
+    function CloseDate(const Value: TDateTime): TInputMessagePoll;
     /// <summary>
     /// True, if the poll needs to be sent already closed; for bots only.
     /// </summary>
@@ -1027,7 +1027,7 @@ type
     /// <summary>
     /// Date the message will be sent. The date must be within 367 days in the future.
     /// </summary>
-    function SendDate(const Value: Int32): TMessageSchedulingStateSendAtDate;
+    function SendDate(const Value: TDateTime): TMessageSchedulingStateSendAtDate;
     constructor Create; reintroduce;
   end;
 
@@ -1222,31 +1222,34 @@ type
 
   {$ENDREGION}
 
-  TBuildSendMessage = class(TParam)
+  /// <summary>
+  /// Sends a message. Returns the sent message.
+  /// </summary>
+  TSendMessage = class(TParam)
     /// <summary>
     /// Target chat.
     /// </summary>
-    function ChatId(const Value: Int64): TBuildSendMessage;
+    function ChatId(const Value: Int64): TSendMessage;
     /// <summary>
     /// If not 0, a message thread identifier in which the message will be sent.
     /// </summary>
-    function MessageThreadId(const Value: Int64): TBuildSendMessage;
+    function MessageThreadId(const Value: Int64): TSendMessage;
     /// <summary>
     /// Identifier of the message to reply to or 0.
     /// </summary>
-    function ReplyToMessageId(const Value: Int64): TBuildSendMessage;
+    function ReplyToMessageId(const Value: Int64): TSendMessage;
     /// <summary>
     /// The content of the message to be sent.
     /// </summary>
-    function InputMessageContent(const Value: TInputMessageContent): TBuildSendMessage;
+    function InputMessageContent(const Value: TInputMessageContent): TSendMessage;
     /// <summary>
     /// Options to be used to send the message; pass null to use default options.
     /// </summary>
-    function Options(const Value: TMessageSendOptions): TBuildSendMessage;
+    function Options(const Value: TMessageSendOptions): TSendMessage;
     /// <summary>
     /// Markup for replying to the message; pass null if none; for bots only.
     /// </summary>
-    function ReplyMarkup(const Value: TReplyMarkup): TBuildSendMessage;
+    function ReplyMarkup(const Value: TReplyMarkup): TSendMessage;
     constructor Create; reintroduce;
   end;
 
@@ -1255,41 +1258,41 @@ implementation
 uses
   HGM.JSONParams;
 
-{ TBuildSendMessage }
+{ TSendMessage }
 
-function TBuildSendMessage.ChatId(const Value: Int64): TBuildSendMessage;
+function TSendMessage.ChatId(const Value: Int64): TSendMessage;
 begin
-  Result := TBuildSendMessage(Add('chat_id', Value));
+  Result := TSendMessage(Add('chat_id', Value));
 end;
 
-constructor TBuildSendMessage.Create;
+constructor TSendMessage.Create;
 begin
   inherited Create('sendMessage');
 end;
 
-function TBuildSendMessage.InputMessageContent(const Value: TInputMessageContent): TBuildSendMessage;
+function TSendMessage.InputMessageContent(const Value: TInputMessageContent): TSendMessage;
 begin
-  Result := TBuildSendMessage(Add('input_message_content', Value));
+  Result := TSendMessage(Add('input_message_content', Value));
 end;
 
-function TBuildSendMessage.MessageThreadId(const Value: Int64): TBuildSendMessage;
+function TSendMessage.MessageThreadId(const Value: Int64): TSendMessage;
 begin
-  Result := TBuildSendMessage(Add('message_thread_id', Value));
+  Result := TSendMessage(Add('message_thread_id', Value));
 end;
 
-function TBuildSendMessage.Options(const Value: TMessageSendOptions): TBuildSendMessage;
+function TSendMessage.Options(const Value: TMessageSendOptions): TSendMessage;
 begin
-  Result := TBuildSendMessage(Add('options', Value));
+  Result := TSendMessage(Add('options', Value));
 end;
 
-function TBuildSendMessage.ReplyMarkup(const Value: TReplyMarkup): TBuildSendMessage;
+function TSendMessage.ReplyMarkup(const Value: TReplyMarkup): TSendMessage;
 begin
-  Result := TBuildSendMessage(Add('reply_markup', Value));
+  Result := TSendMessage(Add('reply_markup', Value));
 end;
 
-function TBuildSendMessage.ReplyToMessageId(const Value: Int64): TBuildSendMessage;
+function TSendMessage.ReplyToMessageId(const Value: Int64): TSendMessage;
 begin
-  Result := TBuildSendMessage(Add('reply_to_message_id', Value));
+  Result := TSendMessage(Add('reply_to_message_id', Value));
 end;
 
 { TInputMessageText }
@@ -2069,7 +2072,7 @@ end;
 
 { TInputMessagePoll }
 
-function TInputMessagePoll.CloseDate(const Value: Int32): TInputMessagePoll;
+function TInputMessagePoll.CloseDate(const Value: TDateTime): TInputMessagePoll;
 begin
   Result := TInputMessagePoll(Add('close_date', Value));
 end;
@@ -2325,7 +2328,7 @@ begin
   inherited Create('messageSchedulingStateSendAtDate');
 end;
 
-function TMessageSchedulingStateSendAtDate.SendDate(const Value: Int32): TMessageSchedulingStateSendAtDate;
+function TMessageSchedulingStateSendAtDate.SendDate(const Value: TDateTime): TMessageSchedulingStateSendAtDate;
 begin
   Result := TMessageSchedulingStateSendAtDate(Add('send_date', Value));
 end;

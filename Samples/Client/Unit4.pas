@@ -44,8 +44,9 @@ var
 implementation
 
 uses
-  FMX.DialogService, TGC.Entity.User, System.JSON, TGC.Classes,
-  TGC.Builder.SendMessage, TGC.Entity.Message, TGC.Builder.GetMe;
+  FMX.DialogService, TGC.Entity.User, System.JSON, TGC.Classes, System.DateUtils,
+  TGC.Builder.SendMessage, TGC.Entity.Message, TGC.Builder.GetMe,
+  TGC.Builder.SendMessageAlbum;
 
 {$R *.fmx}
 
@@ -66,35 +67,41 @@ end;
 
 procedure TForm4.ButtonSendMessageClick(Sender: TObject);
 begin
+  if not TelegramClient1.IsInitialized then
+    Exit;     {
   TelegramClient1.Methods.SendMessage(
-    TBuildSendMessage.Create.InputMessageContent(
+    TSendMessage.Create.InputMessageContent(
       TInputMessageText.Create.Text(TFormattedText.Create.Text('😁'))
-    ).ChatId(1288857534), //268284944
+    ).ChatId(1288857534) //268284944
+     .Options(TMessageSendOptions.Create.SchedulingState(TMessageSchedulingStateSendAtDate.Create.SendDate(Now.IncMinute(2)))),
     procedure(Msg: TtgMessage)
     begin
       // сообщение отправлено
       Memo1.Lines.Add('sended msg');
-    end);
+    end);    }
 
+  TelegramClient1.Methods.SendMessageAlbum(
+    TSendMessageAlbum.Create.InputMessageContents([
+    TInputMessagePhoto.Create.Photo(TInputFileLocal.Create.Path('D:\Temp\Photos\299990769.jpg')),
+    TInputMessagePhoto.Create.Photo(TInputFileLocal.Create.Path('D:\Temp\Photos\299990763.jpg'))
+    ]).ChatId(1288857534),
+    procedure(Msg: TtgMessage)
+    begin
+      if Msg.IsError then
+        Memo1.Lines.Add(Msg.Message)
+      else
+        Memo1.Lines.Add('sended msg');
+    end);
+     {
   TelegramClient1.Methods.SendMessage(
-    TBuildSendMessage.Create.InputMessageContent(
-      TInputMessagePhoto.Create.Photo(TInputFileLocal.Create.Path('D:\temp\file.txt'))
+    TSendMessage.Create.InputMessageContent(
+      TInputMessageDocument.Create.Document(TInputFileLocal.Create.Path('D:\Temp\Iconion\HGM\Material Icons_e80e(0)_128.png'))
     ).ChatId(1288857534),
     procedure(Msg: TtgMessage)
     begin
       // сообщение отправлено
       Memo1.Lines.Add('sended msg');
-    end);
-
-  TelegramClient1.Methods.SendMessage(
-    TBuildSendMessage.Create.InputMessageContent(
-      TInputMessageDocument.Create.Document(TInputFileLocal.Create.Path('D:\temp\file.txt'))
-    ).ChatId(1288857534),
-    procedure(Msg: TtgMessage)
-    begin
-      // сообщение отправлено
-      Memo1.Lines.Add('sended msg');
-    end);
+    end);   }
 end;
 
 procedure TForm4.Edit1ChangeTracking(Sender: TObject);

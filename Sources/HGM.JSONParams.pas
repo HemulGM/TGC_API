@@ -99,7 +99,7 @@ end;
 
 function TJSONParam.Add(const Key: string; const Value: TDateTime): TJSONParam;
 begin
-  Add(Key, TJSONNumber.Create(DateTimeToUnix(Value)));
+  Add(Key, TJSONNumber.Create(DateTimeToUnix(Value, False)));
   Result := Self;
 end;
 

@@ -49,6 +49,8 @@ contains
   TGC.Entity.Sticker in '..\Sources\TGC.Entity.Sticker.pas',
   TGC.Builder.SendMessage in '..\Sources\TGC.Builder.SendMessage.pas',
   TGC.Entity.FormatedText in '..\Sources\TGC.Entity.FormatedText.pas',
-  TGC.Builder.GetMe in '..\Sources\TGC.Builder.GetMe.pas';
+  TGC.Builder.GetMe in '..\Sources\TGC.Builder.GetMe.pas',
+  TGC.Builder.SendMessageAlbum in '..\Sources\TGC.Builder.SendMessageAlbum.pas',
+  TGC.Entity.AObject in '..\Sources\TGC.Entity.AObject.pas';
 
 end.

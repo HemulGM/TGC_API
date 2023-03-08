@@ -6,7 +6,7 @@ uses
   System.Classes, System.SysUtils, System.Generics.Collections, System.Threading,
   System.JSON, TGC.Wrapper, TGC.Handler, TGC.Handler.UpdateAuthorizationState,
   TGC.Entity.User, TGC.Classes, TGC.Options, TGC.Builder.SendMessage,
-  TGC.Entity.Message;
+  TGC.Entity.Message, TGC.Builder.SendMessageAlbum;
 
 const
   DEFAULT_WAIT_TIMEOUT = 10.0;
@@ -127,7 +127,11 @@ type
     /// <summary>
     /// Sends a message. Returns the sent message.
     /// </summary>
-    procedure SendMessage(Params: TBuildSendMessage; Callback: TProc<TtgMessage>);
+    procedure SendMessage(Params: TSendMessage; Callback: TProc<TtgMessage>);
+    /// <summary>
+    /// Sends 2-10 messages grouped together into an album. Currently, only audio, document, photo and video messages can be grouped into an album. Documents and audio files can be only grouped in an album with messages of the same type. Returns sent messages.
+    /// </summary>
+    procedure SendMessageAlbum(Params: TSendMessageAlbum; Callback: TProc<TtgMessage>);
     procedure Execute<T: class, constructor>(Query: TParam; FieldName: string; Callback: TProc<T>); overload;
     procedure Execute(Query: TParam; FieldName: string; Callback: TProc<TJSONObject>); overload;
     constructor Create(Client: TTelegramClientCustom);
@@ -965,7 +969,12 @@ begin
   Result := False;
 end;
 
-procedure TDLibMethods.SendMessage(Params: TBuildSendMessage; Callback: TProc<TtgMessage>);
+procedure TDLibMethods.SendMessage(Params: TSendMessage; Callback: TProc<TtgMessage>);
+begin
+  Execute<TtgMessage>(Params, '', Callback);
+end;
+
+procedure TDLibMethods.SendMessageAlbum(Params: TSendMessageAlbum; Callback: TProc<TtgMessage>);
 begin
   Execute<TtgMessage>(Params, '', Callback);
 end;

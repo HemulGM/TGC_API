@@ -274,6 +274,8 @@
         <DCCReference Include="..\..\Sources\TGC.Builder.SendMessage.pas"/>
         <DCCReference Include="..\..\Sources\TGC.Entity.FormatedText.pas"/>
         <DCCReference Include="..\..\Sources\TGC.Builder.GetMe.pas"/>
+        <DCCReference Include="..\..\Sources\TGC.Builder.SendMessageAlbum.pas"/>
+        <DCCReference Include="..\..\Sources\TGC.Entity.AObject.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
